@@ -1,0 +1,188 @@
+# FINAL PROJECT
+
+## Description
+
+This collection contains initial Ansible Playbook scripting to install software, provide system updates, and load templated configurations to Windows and Rocky Linux operating systems.
+
+## Requirements
+
+Ansible 10 and its prerequisites.
+
+For Windows OS family, additional prerequisites include device setup for Powershell script execution and local account addition with administrative privileges.
+
+To execute Powershell scripts from the Control Node, download and run the 'powershell_install.sh' script then create a symbolic link to execute powershell instead of pwsh within the /usr/bin path.
+
+See [using Ansible collections](https://docs.ansible.com/ansible/devel/user_guide/collections_using.html) for more details.
+
+## Use
+
+Config Files:   Upload any overriding configuration files to the html folder within this collection
+INVENTORY:      Ensure hostname, ip address, and username for required hosts are entered into inventory.ini
+
+ansible-playbook -i inventory.ini final_project.yml
+
+
+## Contributing (Optional)
+
+This section is optional, and provides a section to describe how to contribute to the collection. You can include, or link to, contribution guidelines that describe the process for contribution and a code of conduct for contributing to the collection and interacting with other contributors. This section should also include contact information or links to community channels for discussion.
+
+
+## Support
+
+This collection is provided without support as a student exercise for the purposes of study and testing.
+
+## License Information
+
+This collection is distributed under GNU Lesser General Public License.
+https://www.gnu.org/licenses/lgpl-3.0.en.html#license-text
+
+This license does not supersede or conflict with any referenced software packages contained within the playbook.  Such software packages maintain their own existing license protections as this collection only references publicly available compiled packages for the purpose of installation.
+
+## DEMO
+jordan@cis-win11-07:~/week13-FINAL-PROJECT$ ansible-playbook final_project.yml -i inventory.ini 
+
+PLAY [all] ********************************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ********************************************************************************************************************************************************************************
+ok: [10.2.37.159]
+ok: [10.2.37.114]
+
+TASK [Windows Roles] **********************************************************************************************************************************************************************************
+skipping: [10.2.37.159] => (item=windows_install_software) 
+skipping: [10.2.37.159] => (item=windows_configure_security) 
+skipping: [10.2.37.159] => (item=windows_enable_bitlocker) 
+skipping: [10.2.37.159] => (item=windows_system_monitor) 
+skipping: [10.2.37.159] => (item=windows_update_reboot) 
+skipping: [10.2.37.159]
+
+TASK [windows_install_software : Install Mozilla Firefox MSI] *****************************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_install_software : Install Google Chrome from winget] ***********************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_install_software : Install Office 365 from winget] **************************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_install_software : Install VLC from winget] *********************************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_configure_security : Allow RDP 3389 TCP/UDP on all profiles] ****************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_configure_security : Enable Real-Time protection in Windows Defender] *******************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [windows_enable_bitlocker : Setup tmp directory if not in place] *********************************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [windows_enable_bitlocker : Enable BitLocker with RecoveryKey] ***********************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_enable_bitlocker : Itemize bek files in tmp directory] **********************************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [windows_enable_bitlocker : Fetch File] **********************************************************************************************************************************************************
+skipping: [10.2.37.114]
+
+TASK [windows_system_monitor : Get CPU Stats] *********************************************************************************************************************************************************
+changed: [10.2.37.114]
+
+TASK [windows_system_monitor : Get disk facts] ********************************************************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [windows_system_monitor : Display System Information] ********************************************************************************************************************************************
+ok: [10.2.37.114] => {
+    "msg": [
+        "System CPU Utilization:  LoadPercentage=2",
+        "RAM Utilization:         7279 of 16383 available",
+        "Disk Utilization:        25.3 GiB of 95.2 GiB available"
+    ]
+}
+
+TASK [windows_update_reboot : Check & Install Windows Updates] ****************************************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [windows_update_reboot : Ensure WinRM Starts After Reboot] ***************************************************************************************************************************************
+ok: [10.2.37.114]
+
+TASK [Rocky Linux Roles] ******************************************************************************************************************************************************************************
+skipping: [10.2.37.114] => (item=rocky_configure_nginx) 
+skipping: [10.2.37.114] => (item=rocky_configure_firewall) 
+skipping: [10.2.37.114] => (item=rocky_install_email_server) 
+skipping: [10.2.37.114] => (item=rocky_configure_radius) 
+skipping: [10.2.37.114]
+
+TASK [rocky_configure_nginx : Stop Apache] ************************************************************************************************************************************************************
+fatal: [10.2.37.159]: FAILED! => {"changed": false, "msg": "Could not find the requested service httpd: host"}
+...ignoring
+
+TASK [rocky_configure_nginx : Remove Apache if present] ***********************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_nginx : Update DNF] *************************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_nginx : Install nginx] **********************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_nginx : Template nginx Configuration with ports 80 and 443] *********************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_firewall : Enable Web Server Ports] *********************************************************************************************************************************************
+[WARNING]: TASK: rocky_configure_firewall : Enable Web Server Ports: The loop variable 'item' is already in use. You should set the `loop_var` value in the `loop_control` option for the task to
+something else to avoid variable collisions and unexpected behavior.
+ok: [10.2.37.159] => (item=http)
+ok: [10.2.37.159] => (item=https)
+
+TASK [rocky_configure_firewall : Restart Firewalld to take in new changes] ****************************************************************************************************************************
+changed: [10.2.37.159]
+
+TASK [rocky_install_email_server : Update DNF Cache] **************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_install_email_server : Install Postfix] ***************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_install_email_server : Push Postfix services] *********************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_install_email_server : Add Test Users] ****************************************************************************************************************************************************
+[WARNING]: TASK: rocky_install_email_server : Add Test Users: The loop variable 'item' is already in use. You should set the `loop_var` value in the `loop_control` option for the task to something
+else to avoid variable collisions and unexpected behavior.
+ok: [10.2.37.159] => (item=user01)
+ok: [10.2.37.159] => (item=user02)
+ok: [10.2.37.159] => (item=user03)
+[WARNING]: The input password appears not to have been hashed. The 'password' argument must be encrypted for this module to work properly.
+
+TASK [rocky_install_email_server : Add user Maildir directory] ****************************************************************************************************************************************
+[WARNING]: TASK: rocky_install_email_server : Add user Maildir directory: The loop variable 'item' is already in use. You should set the `loop_var` value in the `loop_control` option for the task to
+something else to avoid variable collisions and unexpected behavior.
+ok: [10.2.37.159] => (item=user01)
+ok: [10.2.37.159] => (item=user02)
+ok: [10.2.37.159] => (item=user03)
+
+TASK [rocky_install_email_server : Restart Postfix] ***************************************************************************************************************************************************
+changed: [10.2.37.159]
+
+TASK [rocky_install_email_server : Allow SMTP Inbound] ************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_install_email_server : Reload firewall] ***************************************************************************************************************************************************
+changed: [10.2.37.159]
+
+TASK [rocky_configure_radius : Install FreeRadius] ****************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_radius : Apply clients.conf] ****************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_radius : Apply test users] ******************************************************************************************************************************************************
+ok: [10.2.37.159]
+
+TASK [rocky_configure_radius : Enable FreeRadius Service] *********************************************************************************************************************************************
+ok: [10.2.37.159]
+
+PLAY RECAP ********************************************************************************************************************************************************************************************
+10.2.37.114                : ok=15   changed=7    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+10.2.37.159                : ok=20   changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=1   

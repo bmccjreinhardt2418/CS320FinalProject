@@ -1,0 +1,29 @@
+# Final Project - Convert to Roles
+# Jordan Reinhardt
+# December 13, 2024
+
+---
+- hosts: all
+  gather_facts: true
+  
+  tasks:
+    - name: Windows Roles
+      ansible.builtin.include_role:
+        name: '{{ item }}'
+      with_items:
+        - windows_install_software
+        - windows_configure_security
+        - windows_enable_bitlocker
+        - windows_system_monitor
+        - windows_update_reboot
+      when: ansible_facts['os_family'] == "Windows"
+
+    - name: Rocky Linux Roles
+      ansible.builtin.include_role:
+        name: '{{ item }}'
+      with_items:
+        - rocky_configure_nginx
+        - rocky_configure_firewall
+        - rocky_install_email_server
+        - rocky_configure_radius
+      when: ansible_facts['os_family'] == "RedHat"

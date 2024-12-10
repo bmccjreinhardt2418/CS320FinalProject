@@ -1,0 +1,14 @@
+# Final Project / Task 05
+# Name: Jordan Reinhardt
+# December 13, 2024
+
+---
+# Role Tasks
+- name: Check & Install Windows Updates
+  ansible.windows.win_updates:
+    reboot: yes
+
+- name: Ensure WinRM Starts After Reboot
+  ansible.windows.win_service:
+    name: WinRM
+    start_mode: delayed

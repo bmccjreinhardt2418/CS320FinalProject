@@ -1,0 +1,25 @@
+# Final Project / Task 01
+# Name: Jordan Reinhardt
+# December 15, 2024
+
+---
+# Role Tasks
+- name: Install Mozilla Firefox MSI
+  ansible.windows.win_package:
+    path: https://download.mozilla.org/?product=firefox-msi-latest-ssl&os=win64&lang=en-US
+    state: present
+
+- name: Install Google Chrome from winget
+  ansible.windows.win_powershell:
+    script: |
+      winget install Google.Chrome
+
+- name: Install Office 365 from winget
+  ansible.windows.win_powershell:
+    script: |
+      winget install Microsoft.Office
+
+- name: Install VLC from winget
+  ansible.windows.win_powershell:
+    script: |
+      winget install vlc

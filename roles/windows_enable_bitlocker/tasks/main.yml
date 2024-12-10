@@ -1,0 +1,48 @@
+# Final Project / Task 03
+# Name: Jordan Reinhardt
+# December 13, 2024
+
+---
+# Role Tasks
+- name: Setup tmp directory if not in place
+  ansible.windows.win_file:
+    path: C:\tmp
+    state: directory
+
+- name: Enable BitLocker with RecoveryKey
+  ansible.windows.win_powershell:
+    script: |
+      Get-BitLockerVolume | Enable-BitLocker -EncryptionMethod Aes128 -RecoveryKeyPath "C:\tmp\" -RecoveryKeyProtector
+
+- name: Itemize bek files in tmp directory
+  ansible.windows.win_find:
+    paths: C:\tmp
+    patterns: ['*.bek']
+  register: bek_files
+
+- name: Fetch File
+  ansible.builtin.fetch:
+    src: '{{ item.path }}'
+    dest: ./fetch_store/
+  with_items:
+    '{{ bek_files.files }}'
+
+# Was able to confirm list/fetch to grab any .bek files in tmp directory
+# Not sure if permissions issue or something else, but PS returns 
+# the following from local execution on Windows 11:
+
+#PS C:\Users\jreinhardt2418> Get-BitLockerVolume
+#Get-CimInstance : Access denied
+#At C:\Windows\system32\WindowsPowerShell\v1.0\Modules\BitLocker\BitLocker.psm1:144 char:13
+#+             Get-CimInstance `
+#+             ~~~~~~~~~~~~~~~~~
+#    + CategoryInfo          : PermissionDenied: (root\cimv2\Secu...cryptableVolume:String) [Get-CimInstance], CimExcep
+#   tion
+#    + FullyQualifiedErrorId : HRESULT 0x80041003,Microsoft.Management.Infrastructure.CimCmdlets.GetCimInstanceCommand
+#
+#Get-Win32EncryptableVolumeInternal :  does not have an associated BitLocker volume.
+#At C:\Windows\system32\WindowsPowerShell\v1.0\Modules\BitLocker\BitLocker.psm1:696 char:42
+#+ ...       $AllWin32EncryptableVolume = Get-Win32EncryptableVolumeInternal
+#+                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#    + CategoryInfo          : NotSpecified: (:) [Write-Error], COMException
+#    + FullyQualifiedErrorId : System.Runtime.InteropServices.COMException,Get-Win32EncryptableVolumeInternal

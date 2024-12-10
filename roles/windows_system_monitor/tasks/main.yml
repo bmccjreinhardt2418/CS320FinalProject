@@ -1,0 +1,24 @@
+# Final Project / Task 04
+# Name: Jordan Reinhardt
+# December 13, 2024
+
+---
+# Role Tasks
+- name: Get CPU Stats
+  ansible.windows.win_command: wmic cpu get loadpercentage /Value
+  register: cpu_stats
+
+# RAM Stats collected during gather_facts
+
+- name: Get disk facts
+  community.windows.win_disk_facts:
+
+- name: Display System Information
+  ansible.builtin.debug:
+    msg:
+    - "System CPU Utilization:  {{ cpu_stats['stdout'] | regex_search('LoadPercentage=[0-9]+') }}"
+    - "RAM Utilization:         {{ ansible_facts['memfree_mb'] }} of {{ ansible_facts['memtotal_mb'] }} available"
+    - "Disk Utilization:        {{ diskavail }} of {{ disksize }} available"
+  vars:
+    disksize: '{{ ansible_facts.disks[0].partitions[2].volumes[0].size | filesizeformat(true) }}'
+    diskavail: '{{ ansible_facts.disks[0].partitions[2].volumes[0].size_remaining | filesizeformat(true) }}'

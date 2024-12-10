@@ -1,0 +1,21 @@
+# Final Project / Task 02
+# Name: Jordan Reinhardt
+# December 15, 2024
+
+---
+# Role Tasks
+- name: Allow RDP 3389 TCP/UDP on all profiles
+  ansible.windows.win_powershell:
+    script: |
+      netsh advFirewall Firewall set rule group="Remote Desktop" new enable=yes
+
+- name: Enable Real-Time protection in Windows Defender
+  ansible.windows.win_regedit:
+    path: HKLM:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
+    name: DisableRealtimeMonitoring
+    state: absent
+    # Removing disable registry has effect of enabling/activating Real-Time Protection
+    # Cite: "Group Policy Settings Reference Spreadsheet"
+    # https://www.microsoft.com/en-us/download/details.aspx?id=106067
+    # Policy File: windowsdefender.admx
+    # Policy Setting Name: Turn off real-time protection

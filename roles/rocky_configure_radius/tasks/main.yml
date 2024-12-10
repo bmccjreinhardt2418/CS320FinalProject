@@ -1,0 +1,39 @@
+# Final Project - Task 09
+# Jordan Reinhardt
+# December 13, 2024
+
+---
+# Role Tasks
+- name: Install FreeRadius
+  ansible.builtin.dnf:
+    name:
+      - freeradius
+      - freeradius-utils
+    state: latest
+  become: true
+
+- name: Apply clients.conf
+  ansible.builtin.template:
+    src: clients.conf.j2
+    dest: /etc/raddb/clients.conf
+    group: root
+    owner: root
+    mode: '0755'
+  become: true
+
+- name: Apply test users
+  ansible.builtin.template:
+    src: users.j2
+    dest: /etc/raddb/users
+    group: root
+    owner: root
+    mode: '0755'
+  become: true
+
+- name: Enable FreeRadius Service
+  ansible.builtin.systemd_service:
+    name: radiusd.service
+    enabled: true
+    state: started
+  become: true
+  
